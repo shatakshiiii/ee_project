@@ -19,19 +19,6 @@ def setup_logger(level):
     logger.addHandler(handler)
     return logger
 
-# def get_changed_files(start_ref, end_ref, logger):
-#     """Get a list of changed files between two Git references."""
-#     cmd = ["git", "diff", "--name-only", start_ref, end_ref]
-#     logger.info(f"Running command: {' '.join(cmd)}")
-#     result = subprocess.run(cmd, capture_output=True, text=True)
-
-#     if result.returncode != 0:
-#         logger.error(f"Git command failed with exit code {result.returncode}: {result.stderr}")
-#         sys.exit(1)
-
-#     logger.debug(f"Command output: {result.stdout}")
-#     return result.stdout.strip().split('\n')
-
 def find_execution_environment_files(root_dir):
     ee_files = []
     for root, dirs, files in os.walk(root_dir):
@@ -65,7 +52,6 @@ def main():
         # branch name
         end_ref = "refs/remotes/origin/" + args.end_ref
 
-    # changed_files = get_changed_files(args.start_ref, end_ref, logger)
     root_dir = os.getenv('GITHUB_WORKSPACE', '')
     ee_files = find_execution_environment_files(root_dir)
 
