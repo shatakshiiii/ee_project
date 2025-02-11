@@ -1,4 +1,4 @@
-name: Prod EE Build
+name: Release-ee-build
 
 on:
   push:
