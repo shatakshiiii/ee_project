@@ -130,8 +130,8 @@ jobs:
           ansible-builder build -v 3 \
           --build-arg AH_TOKEN=${{ secrets.AH_TOKEN }} \
           --context=../${{ env.EE }} \
-          --tag=${{ env.EE }}:${{ env.IMAGE_TAG }} \
-          --tag=${{ env.EE }}:${{ github.sha }}
+          --tag=vanilla_ee:${{ env.IMAGE_TAG }} \
+          --tag=vanilla_ee:${{ github.sha }}
 
           # Create artifact file
           COMMANDS_FILE="commands-${{ matrix.ee }}.txt"
