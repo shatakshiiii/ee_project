@@ -90,7 +90,7 @@ jobs:
           fetch-depth: 0
 
       - name: Install python requirements (ansible-builder)
-        run: pip install -r requirements.txt
+        run: pip install ansible-builder
 
       - name: Define environment variables
         run: |
