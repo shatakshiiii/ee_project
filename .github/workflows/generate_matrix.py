@@ -63,7 +63,7 @@ def main():
             logger.info(f"EE file found: {ee_file}")
             dirs.add(dir_name)
 
-    matrix = {'include': [{'ee': dir_name} for dir_name in dirs]}
+    matrix = {'include': [{'ee': dir_name.split("/")[-1]} for dir_name in dirs]}
     logger.info(f"Generated matrix: {json.dumps(matrix, indent=4)}")
 
     with open(args.output_path, 'w') as file:
