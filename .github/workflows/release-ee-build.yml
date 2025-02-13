@@ -39,7 +39,7 @@ jobs:
     needs: [prepare-matrix]
     if: ${{ needs.prepare-matrix.outputs.length != '0' }}
     runs-on: ubuntu-latest
-    environment: deploy
+    environment: release
     strategy:
       matrix: ${{fromJson(needs.prepare-matrix.outputs.matrix)}}
       fail-fast: false
