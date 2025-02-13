@@ -31,10 +31,10 @@ jobs:
       working-directory: ${{ github.workspace }}
       run: |
         MATRIX_JSON=$(cat matrix_output.json)
-        echo "::set-output name=matrix::$MATRIX_JSON"
+        echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
         MATRIX_LENGTH=$(echo $MATRIX_JSON | jq '.include | length')
         echo $MATRIX_LENGTH
-        echo "::set-output name=length::$MATRIX_LENGTH"
+        echo "length=$MATRIX_LENGTH" >> $GITHUB_OUTPUT
 
   build-ee:
     needs: [prepare-matrix]
