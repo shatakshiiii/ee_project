@@ -129,8 +129,8 @@ jobs:
         run: |
           ansible-builder build -v 3 \
           --build-arg AH_TOKEN=${{ secrets.AH_TOKEN }} \
-          --tag=vanilla_ee:${{ env.IMAGE_TAG }} \
-          --tag=vanilla_ee:${{ github.sha }}
+          --tag=${{ env.EE }}:${{ env.IMAGE_TAG }} \
+          --tag=${{ env.EE }}:${{ github.sha }}
 
       #     # Create artifact file
       #     COMMANDS_FILE="commands-${{ matrix.ee }}.txt"
@@ -158,7 +158,7 @@ jobs:
         id: push_to_ghcr
         uses: redhat-actions/push-to-registry@v2
         with:
-          image: vanilla_ee
+          image: ${{ env.EE }}
           tags: ${{ env.IMAGE_TAG }}
           registry: ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}
 
