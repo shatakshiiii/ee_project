@@ -63,23 +63,12 @@ jobs:
           echo "EE=${{ matrix.ee }}" >> $GITHUB_ENV
           echo "IMAGE_TAG=latest" >> $GITHUB_ENV
 
-      - name: Log in to quay.io
+      - name: Login to ghcr
         uses: redhat-actions/podman-login@v1
         with:
-          registry: quay.io
-          username: ${{ secrets.REDHAT_USERNAME }}
-          password: ${{ secrets.REDHAT_PASSWORD }}
-
-      - name: Log in to registry.redhat.io
-        uses: redhat-actions/podman-login@v1
-        with:
-          registry: registry.redhat.io
-          username: ${{ secrets.REDHAT_USERNAME }}
-          password: ${{ secrets.REDHAT_PASSWORD }}
-
-      - name: Substitute token for automation hub
-        run: |
-          sed -i "s/my_ah_token/${{ secrets.AH_TOKEN }}/1" ansible.cfg
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: (devel) Build image and create artifact
         run: |
@@ -124,17 +113,16 @@ jobs:
           name: commands-${{ matrix.ee }}
           path: ${{ matrix.ee }}/commands-${{ matrix.ee }}.txt
 
-      - name: Push To quay.io
+      - name: Push To GHCR
+        id: push_to_ghcr
         uses: redhat-actions/push-to-registry@v2
         with:
           image: ${{ env.EE }}
           tags: ${{ env.IMAGE_TAG }} ${{ github.sha }}
-          registry: quay.io/${{ secrets.QUAY_USER }}/
-          username: ${{ secrets.REDHAT_USERNAME }}
-          password: ${{ secrets.REDHAT_PASSWORD }}
+          registry: ghcr.io/${{ github.repository_owner }}
 
       - name: Print summary
         run: |
           echo "## :rocket: Usage" >> $GITHUB_STEP_SUMMARY
-          echo "Image pushed to repository: quay.io/${{ secrets.QUAY_USER }}/${{ env.EE }}:${{ env.IMAGE_TAG }}" >> $GITHUB_STEP_SUMMARY
-          echo "> \`podman pull quay.io/${{ secrets.QUAY_USER }}/${{ env.EE }}:${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "Image pushed to repository: ghcr.io/${{ github.repository_owner }}/${{ env.EE }}:${{ env.IMAGE_TAG }}" >> $GITHUB_STEP_SUMMARY
+          echo "> \`podman pull ghcr.io/${{ github.repository_owner }}/${{ env.EE }}:${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
