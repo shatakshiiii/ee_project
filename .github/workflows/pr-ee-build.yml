@@ -18,13 +18,9 @@ jobs:
         ref: ${{ github.event.pull_request.head.ref != '' && github.event.pull_request.head.ref || 'main' }}
 
   debug:
-    needs: [prepare-matrix]
-    if: ${{ needs.prepare-matrix.outputs.length != '0' }}
+    needs: [prepare]
     runs-on: ubuntu-latest
     environment: test
-    strategy:
-      matrix: ${{fromJson(needs.prepare-matrix.outputs.matrix)}}
-      fail-fast: false
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
