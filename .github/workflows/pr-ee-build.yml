@@ -186,7 +186,7 @@ jobs:
           script: |
             const fs = require('fs');
             const path = require('path');
-            let commentBody = '### :rocket: **EE Images Built** :rocket:\n\n';
+            let commentBody = '### **EE Images Built** \n\n';
 
             const artifactsDirectory = './';  // Base directory where artifacts are downloaded
             fs.readdirSync(artifactsDirectory, { withFileTypes: true }).forEach(dirent => {
