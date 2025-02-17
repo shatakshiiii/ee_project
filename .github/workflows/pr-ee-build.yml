@@ -7,11 +7,8 @@ on:
     types: [opened, reopened, synchronize]
 
 jobs:
-  prepare-matrix:
-    runs-on: ubuntu-latest  
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      length: ${{ steps.set-matrix.outputs.length }}
+  prepare:
+    runs-on: ubuntu-latest
     steps:
     - name: Checkout repo
       uses: actions/checkout@v2
@@ -19,25 +16,6 @@ jobs:
         repository: ${{ github.event.pull_request.head.repo.full_name }}
         fetch-depth: 0
         ref: ${{ github.event.pull_request.head.ref != '' && github.event.pull_request.head.ref || 'main' }}
-
-    - name: Generate matrix  
-      id: generate-matrix
-      run: |
-        echo $GITHUB_BASE_REF
-        echo $GITHUB_HEAD_REF
-        python -u .github/workflows/generate_matrix.py \
-        --start-ref origin/$GITHUB_BASE_REF \
-        --end-ref $GITHUB_HEAD_REF \
-        --output-path matrix_output.json
-
-    - name: Read matrix
-      id: set-matrix
-      run: |
-        MATRIX_JSON=$(cat matrix_output.json)
-        echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
-        MATRIX_LENGTH=$(echo $MATRIX_JSON | jq '.include | length')
-        echo $MATRIX_LENGTH
-        echo "length=$MATRIX_LENGTH" >> $GITHUB_OUTPUT
 
   debug:
     needs: [prepare-matrix]
@@ -81,15 +59,11 @@ jobs:
         run: git diff origin/main
 
   build-ee:
-    needs: [prepare-matrix]
-    if: ${{ needs.prepare-matrix.outputs.length != '0' }}
+    needs: [prepare]
     outputs:
       push_success: ${{ steps.push_to_ghcr.outputs.push_success }}
     runs-on: ubuntu-latest
     environment: test
-    strategy:
-      matrix: ${{fromJson(needs.prepare-matrix.outputs.matrix)}}
-      fail-fast: false
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -166,7 +140,7 @@ jobs:
 
       - name: Print summary
         run: |
-          echo "## :rocket: Usage" >> $GITHUB_STEP_SUMMARY
+          echo "## Usage" >> $GITHUB_STEP_SUMMARY
           echo "Image pushed to repository: ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.EE }}:${{ env.IMAGE_TAG }}" >> $GITHUB_STEP_SUMMARY
           echo "> \`podman pull ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.EE }}:${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
 

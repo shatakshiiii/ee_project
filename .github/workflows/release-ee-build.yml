@@ -5,44 +5,18 @@ on:
     types: [published]
 
 jobs:
-  prepare-matrix:
+  prepare:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      length: ${{ steps.set-matrix.outputs.length }}
     steps:
     - name: Checkout repo
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
 
-    - name: Generate matrix  
-      id: generate-matrix
-      working-directory: ${{ github.workspace }}
-      run: |
-        python -u .github/workflows/generate_matrix.py \
-        --start-ref $(git rev-parse HEAD^1) \
-        --end-ref $(git rev-parse HEAD) \
-        --output matrix_output.json
-
-    - name: Read matrix
-      id: set-matrix
-      working-directory: ${{ github.workspace }}
-      run: |
-        MATRIX_JSON=$(cat matrix_output.json)
-        echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
-        MATRIX_LENGTH=$(echo $MATRIX_JSON | jq '.include | length')
-        echo $MATRIX_LENGTH
-        echo "length=$MATRIX_LENGTH" >> $GITHUB_OUTPUT
-
   build-ee:
-    needs: [prepare-matrix]
-    if: ${{ needs.prepare-matrix.outputs.length != '0' }}
+    needs: [prepare]
     runs-on: ubuntu-latest
     environment: release
-    strategy:
-      matrix: ${{fromJson(needs.prepare-matrix.outputs.matrix)}}
-      fail-fast: false
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
@@ -62,6 +36,7 @@ jobs:
         run: |
           echo "EE=`yq -r '.options.tags[0]' 'execution-environment.yml'`" >> $GITHUB_ENV
           echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+          echo "EE_file=execution-environment.yml" >> $GITHUB_ENV
 
       - name: Login to ghcr
         uses: redhat-actions/podman-login@v1
@@ -75,7 +50,6 @@ jobs:
           echo "Would build: ${{ env.EE }}"
 
       - name: Build image and create artifact
-        working-directory: ${{ env.EE }}
         run: |
           ansible-builder build -v 3 \
           --build-arg AH_TOKEN=${{ secrets.AH_TOKEN }} \
@@ -111,7 +85,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: commands-${{ env.EE }}
-          path: ${{ env.EE }}/commands-${{ env.EE }}.txt
+          path: ./commands-${{ env.EE }}.txt
 
       - name: Push To GHCR
         id: push_to_ghcr
@@ -123,6 +97,6 @@ jobs:
 
       - name: Print summary
         run: |
-          echo "## :rocket: Usage" >> $GITHUB_STEP_SUMMARY
+          echo "## Usage" >> $GITHUB_STEP_SUMMARY
           echo "Image pushed to repository: ghcr.io/${{ github.repository_owner }}/${{ env.EE }}:${{ env.IMAGE_TAG }}" >> $GITHUB_STEP_SUMMARY
           echo "> \`podman pull ghcr.io/${{ github.repository_owner }}/${{ env.EE }}:${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
