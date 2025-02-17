@@ -105,6 +105,7 @@ jobs:
           SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
           echo "IMAGE_TAG=pr-${{ github.event.number }}-$SHORT_SHA" >> $GITHUB_ENV
           echo "IMAGE_REGISTRY=ghcr.io" >> $GITHUB_ENV
+          echo $GITHUB_ENV
 
       - name: Login to ghcr
         uses: redhat-actions/podman-login@v1
@@ -114,7 +115,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image and create artifact
-        working-directory: ${{ matrix.ee }}
         run: |
           ansible-builder build -v 3 \
           --build-arg AH_TOKEN=${{ secrets.AH_TOKEN }} \
