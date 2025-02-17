@@ -5,44 +5,18 @@ on:
     types: [published]
 
 jobs:
-  prepare-matrix:
+  prepare:
     runs-on: ubuntu-latest
-    outputs:
-      matrix: ${{ steps.set-matrix.outputs.matrix }}
-      length: ${{ steps.set-matrix.outputs.length }}
     steps:
     - name: Checkout repo
       uses: actions/checkout@v2
       with:
         fetch-depth: 0
 
-    - name: Generate matrix  
-      id: generate-matrix
-      working-directory: ${{ github.workspace }}
-      run: |
-        python -u .github/workflows/generate_matrix.py \
-        --start-ref $(git rev-parse HEAD^1) \
-        --end-ref $(git rev-parse HEAD) \
-        --output matrix_output.json
-
-    - name: Read matrix
-      id: set-matrix
-      working-directory: ${{ github.workspace }}
-      run: |
-        MATRIX_JSON=$(cat matrix_output.json)
-        echo "matrix=$MATRIX_JSON" >> $GITHUB_OUTPUT
-        MATRIX_LENGTH=$(echo $MATRIX_JSON | jq '.include | length')
-        echo $MATRIX_LENGTH
-        echo "length=$MATRIX_LENGTH" >> $GITHUB_OUTPUT
-
   build-ee:
-    needs: [prepare-matrix]
-    if: ${{ needs.prepare-matrix.outputs.length != '0' }}
+    needs: [prepare]
     runs-on: ubuntu-latest
     environment: release
-    strategy:
-      matrix: ${{fromJson(needs.prepare-matrix.outputs.matrix)}}
-      fail-fast: false
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
