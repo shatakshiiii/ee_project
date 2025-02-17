@@ -1,6 +1,9 @@
-name: Release
+name: EE Build
 
 on:
+  push:
+    branches:
+      - main
   release:
     types: [published]
 
@@ -16,7 +19,7 @@ jobs:
   build-ee:
     needs: [prepare]
     runs-on: ubuntu-latest
-    environment: release
+    environment: ${{ github.event_name }}
     steps:
       - name: Checkout repo
         uses: actions/checkout@v2
