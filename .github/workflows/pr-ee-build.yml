@@ -101,7 +101,7 @@ jobs:
 
       - name: Define environment variables
         run: |
-          echo "EE=${{ matrix.ee }}" >> $GITHUB_ENV
+          echo "EE=`yq -r '.options.tags[0]' 'execution-environment.yml'`" >> $GITHUB_ENV
           SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
           echo "IMAGE_TAG=pr-${{ github.event.number }}-$SHORT_SHA" >> $GITHUB_ENV
           echo "IMAGE_REGISTRY=ghcr.io" >> $GITHUB_ENV
@@ -115,7 +115,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image and create artifact
-        working-directory: ${{ matrix.ee }}
+        working-directory: ${{ env.EE }}
         run: |
           ansible-builder build -v 3 \
           --build-arg AH_TOKEN=${{ secrets.AH_TOKEN }} \
@@ -123,7 +123,7 @@ jobs:
           --tag=${{ env.EE }}:${{ github.sha }}
 
           # Create artifact file
-          COMMANDS_FILE="commands-${{ matrix.ee }}.txt"
+          COMMANDS_FILE="commands-${{ env.EE }}.txt"
           echo "" >> $COMMANDS_FILE
           echo "EE: ${{ env.EE }}" >> $COMMANDS_FILE
           echo "" >> $COMMANDS_FILE
@@ -149,8 +149,8 @@ jobs:
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
-          name: commands-${{ matrix.ee }}
-          path: ${{ matrix.ee }}/commands-${{ matrix.ee }}.txt
+          name: commands-${{ env.EE }}
+          path: ${{ env.EE }}/commands-${{ env.EE }}.txt
 
       - name: Push To GHCR
         id: push_to_ghcr
