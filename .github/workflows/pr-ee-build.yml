@@ -102,6 +102,7 @@ jobs:
       - name: Define environment variables
         run: |
           echo "EE=`yq -r '.options.tags[0]' 'execution-environment.yml'`" >> $GITHUB_ENV
+          echo "EE_file=execution-environment.yml" >> $GITHUB_ENV
           SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
           echo "IMAGE_TAG=pr-${{ github.event.number }}-$SHORT_SHA" >> $GITHUB_ENV
           echo "IMAGE_REGISTRY=ghcr.io" >> $GITHUB_ENV
@@ -115,7 +116,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build image and create artifact
-        working-directory: ${{ env.EE }}
         run: |
           ansible-builder build -v 3 \
           --build-arg AH_TOKEN=${{ secrets.AH_TOKEN }} \
@@ -150,7 +150,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: commands-${{ env.EE }}
-          path: ${{ env.EE }}/commands-${{ env.EE }}.txt
+          path: ./commands-${{ env.EE }}.txt
 
       - name: Push To GHCR
         id: push_to_ghcr
