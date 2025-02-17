@@ -62,6 +62,7 @@ jobs:
         run: |
           echo "EE=`yq -r '.options.tags[0]' 'execution-environment.yml'`" >> $GITHUB_ENV
           echo "IMAGE_TAG=latest" >> $GITHUB_ENV
+          echo "EE_file=execution-environment.yml" >> $GITHUB_ENV
 
       - name: Login to ghcr
         uses: redhat-actions/podman-login@v1
@@ -75,7 +76,6 @@ jobs:
           echo "Would build: ${{ env.EE }}"
 
       - name: Build image and create artifact
-        working-directory: ${{ env.EE }}
         run: |
           ansible-builder build -v 3 \
           --build-arg AH_TOKEN=${{ secrets.AH_TOKEN }} \
@@ -111,7 +111,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: commands-${{ env.EE }}
-          path: ${{ env.EE }}/commands-${{ env.EE }}.txt
+          path: ./commands-${{ env.EE }}.txt
 
       - name: Push To GHCR
         id: push_to_ghcr
