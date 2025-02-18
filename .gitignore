@@ -1,2 +1,4 @@
 context/
 .DS_Store
+.github/workflows/pr-ee-build.yml
+.github/workflows/push-and-release.yml
