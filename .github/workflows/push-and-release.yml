@@ -32,10 +32,8 @@ jobs:
           git fetch origin ${{ github.base_ref }}
           git fetch origin ${{ github.head_ref }}
 
-      - name: Install python requirements
-        run: |
-          pip install ansible-builder
-          pip install ansible-navigator
+      - name: Install python requirements (ansible-builder)
+        run: pip install ansible-builder
 
       - name: Define environment variables
         run: |
