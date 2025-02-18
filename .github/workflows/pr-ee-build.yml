@@ -66,8 +66,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Install python requirements (ansible-builder)
-        run: pip install ansible-builder
+      - name: Install python requirements
+        run: |
+          pip install ansible-builder
+          pip install ansible-navigator
 
       - name: Define environment variables
         run: |
@@ -107,6 +109,12 @@ jobs:
           echo "" >> $COMMANDS_FILE
           echo "\`\`\`" >> $COMMANDS_FILE
           podman run -it ${{ env.EE }}:${{ env.IMAGE_TAG }} ansible-galaxy collection list  >> $COMMANDS_FILE
+          echo "\`\`\`" >> $COMMANDS_FILE
+          echo "" >> $COMMANDS_FILE
+          echo "#### EE Testing" >> $COMMANDS_FILE
+          echo "" >> $COMMANDS_FILE
+          echo "\`\`\`" >> $COMMANDS_FILE
+          podman run -it ${{ env.EE }}:${{ env.IMAGE_TAG }} ansible-navigator --version  >> $COMMANDS_FILE
           echo "\`\`\`" >> $COMMANDS_FILE
           echo "" >> $COMMANDS_FILE
           echo "#### Ansible version" >> $COMMANDS_FILE
