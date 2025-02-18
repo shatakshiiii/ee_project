@@ -153,7 +153,7 @@ jobs:
           echo "> \`podman pull ${{ env.IMAGE_REGISTRY }}/${{ github.repository_owner }}/${{ env.EE }}:${{ env.IMAGE_TAG }}\`" >> $GITHUB_STEP_SUMMARY
 
   build-ee-push-and-release:
-    if: github.event_name == 'push' or github.event_name == 'release'
+    if: github.event_name == 'push' || github.event_name == 'release'
     needs: prepare
     runs-on: ubuntu-latest
     environment: ${{ github.event_name }}
