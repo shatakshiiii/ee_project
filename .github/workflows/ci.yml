@@ -1,4 +1,5 @@
-# Combined github-action for pull-request, push-to-main and release workflows.
+# Combine workflow for pull-request, push-to-main and release events.
+
 name: EE Build
 
 on:
