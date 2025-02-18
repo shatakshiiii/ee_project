@@ -24,6 +24,7 @@ dependencies:
   python:
     - requests
     - boto3
+    - ansible-navigator
 
   galaxy:
     collections:
