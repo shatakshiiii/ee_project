@@ -111,6 +111,12 @@ jobs:
           podman run -it ${{ env.EE }}:${{ env.IMAGE_TAG }} ansible-galaxy collection list  >> $COMMANDS_FILE
           echo "\`\`\`" >> $COMMANDS_FILE
           echo "" >> $COMMANDS_FILE
+          echo "#### EE Testing" >> $COMMANDS_FILE
+          echo "" >> $COMMANDS_FILE
+          echo "\`\`\`" >> $COMMANDS_FILE
+          podman run -it ${{ env.EE }}:${{ env.IMAGE_TAG }} ansible-navigator --version  >> $COMMANDS_FILE
+          echo "\`\`\`" >> $COMMANDS_FILE
+          echo "" >> $COMMANDS_FILE
           echo "#### Ansible version" >> $COMMANDS_FILE
           echo "" >> $COMMANDS_FILE
           echo "\`\`\`" >> $COMMANDS_FILE
