@@ -22,9 +22,9 @@ dependencies:
     - sshpass
 
   python:
-    - requests
-    - boto3
     - ansible-navigator
+    - boto3
+    - requests
 
   galaxy:
     collections:
