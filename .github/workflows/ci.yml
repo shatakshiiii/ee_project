@@ -88,7 +88,7 @@ jobs:
           echo "IMAGE_REGISTRY=ghcr.io" >> $GITHUB_ENV
 
       - name: Define environment variables for PR
-        if: github.event_name == 'pull_request'
+        if: github.event_name == 'pull_request_target'
         run: |
           SHORT_SHA=$(echo ${{ github.sha }} | cut -c1-7)
           echo "IMAGE_TAG=pr-${{ github.event.number }}-$SHORT_SHA" >> $GITHUB_ENV
