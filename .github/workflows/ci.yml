@@ -17,10 +17,10 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repo
-      uses: actions/checkout@v2
-      with:
-        fetch-depth: 0
+      - name: Checkout repo
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
   debug:
     if: github.event_name == 'pull_request_target'
@@ -111,7 +111,7 @@ jobs:
 
       - name: (devel) Build image and create artifact
         run: |
-          echo "Would build: ${{ env.EE }}"    
+          echo "Would build: ${{ env.EE }}"
 
       - name: Build image and create artifact
         run: |
